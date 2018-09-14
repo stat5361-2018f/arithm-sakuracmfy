@@ -3,7 +3,8 @@ title: "Approximation of Monte Carlo Method"
 subtitle: "5361 Homework 2"
 author: "Qinxiao Shi"
 date: "09/04/2018"
-abstract: "Consider approximation of standard normal distribution by the Monte Carlo methods."
+abstract: 
+  "Exercise 1.2: Consider approximation of standard normal distribution by the Monte Carlo methods. Exercise 1.3: Explain some double floats."
 
 output: 
   pdf_document:
@@ -31,7 +32,15 @@ Experiment with the approximation at $n\in{\lbrace 10^2, 10^3, 10^4 \rbrace}$ at
 ```{r table, echo=TRUE}
 library(knitr)
 library(kableExtra)
+library(ggplot2)
+library(ggpubr)
 
+biasb <- data.frame(matrix(NA, nrow=100, ncol=9))
+biasc <- data.frame(matrix(NA, nrow=100, ncol=9))
+biasd <- data.frame(matrix(NA, nrow=100, ncol=9))
+
+for (y in 1:100)
+{
 t <- c(0.0, 0.67, 0.84, 1.28, 1.65, 2.32, 2.58, 3.09, 3.72)
 a <- array(data=NA, dim=length(t))
 
@@ -41,9 +50,8 @@ a[i] <- pnorm(t[i], mean=0, sd=1)
 t <- c("t=", t)
 a <- c("F(x)=", a)
 
-table1 <- array(c(t, a), dim = c(10, 2))
 
-set.seed(20180913)
+set.seed(y)
 norm100 <- rnorm(100)
 norm1000 <- rnorm(1000)
 norm10000 <- rnorm(10000)
@@ -63,16 +71,22 @@ b <- c("Sum= (n=100)", b)
 c <- c("Sum= (n=1000)", c)
 d <- c("Sum= (n=10000)", d)
 
-table2 <- array(c(t, b, c, d), dim = c(10, 4))
+for (z in 1:9)
+{
+  biasb[y,z] <- as.numeric(b[z+1])-as.numeric(a[z+1])
+  biasc[y,z] <- as.numeric(c[z+1])-as.numeric(a[z+1])
+  biasd[y,z] <- as.numeric(d[z+1])-as.numeric(a[z+1])
+}
+}
 
+table1 <- array(c(t, a), dim = c(10, 2))
 kable(table1, caption = 'The CDF of Standard Normal Distribution', booktabs=T) %>%
   row_spec(1, bold = T, hline_after = T)
-
+table2 <- array(c(t, b, c, d), dim = c(10, 4))
 kable(table2, caption = 'The Summation of Monte Carlo Methods', booktabs=T) %>%
   row_spec(1, bold = T, hline_after = T)
   
 ```
-
 
 ## Figures
 
@@ -90,25 +104,87 @@ hist(norm10000, col = 'darkgray', border = 'white', main = "Histogram of N(0,1) 
 Which is obvious that when n increasing, the distribution of samples random chose from standard normal distribution is more close to standard normal distribution, which is a continues distribution.
 
 ```{r boxplot, echo=TRUE}
-group <- array(NA, dim=11100)
+group <- array(NA, dim=300)
 for (x in 1:100){
   group[x] <- "n = 100"
 }
-for (x in 101:1100){
+for (x in 101:200){
   group[x] <- "n = 1000"
 }
-for (x in 1101:11100){
+for (x in 201:300){
   group[x] <- "n = 10000"
 }
 
-norm <- c(norm100, norm1000, norm10000)
-boxplot(norm~group, data = NULL,
-        main = "Box Plot of N(0,1) with Difference Sample Size",
-        xlab = "Sample Size",
-        ylab = "Standard Normal Distribution")
+norm1 <- c(biasb[,1], biasc[,1], biasd[,1])
+table3 <- data.frame(group, norm1)
+
+a <- ggplot(table3, aes(x = group, y = norm1)) + 
+    geom_boxplot()+ggtitle("t=0.0")+labs(x="n", y="Error")+theme(plot.title = element_text(hjust = 0.5))
+
+
+norm2 <- c(biasb[,2], biasc[,2], biasd[,2])
+table3 <- data.frame(group, norm2)
+
+b <- ggplot(table3, aes(x = group, y = norm2)) + 
+    geom_boxplot()+ggtitle("t=0.67")+labs(x="n", y="Error")+theme(plot.title = element_text(hjust = 0.5))
+
+
+norm3 <- c(biasb[,3], biasc[,3], biasd[,3])
+table3 <- data.frame(group, norm3)
+
+c <- ggplot(table3, aes(x = group, y = norm3)) + 
+    geom_boxplot()+ggtitle("t=0.84")+labs(x="n", y="Error")+theme(plot.title = element_text(hjust = 0.5))
+
+
+norm4 <- c(biasb[,4], biasc[,4], biasd[,4])
+table3 <- data.frame(group, norm4)
+
+d <- ggplot(table3, aes(x = group, y = norm4)) + 
+    geom_boxplot()+ggtitle("t=1.28")+labs(x="n", y="Error")+theme(plot.title = element_text(hjust = 0.5))
+
+
+norm5 <- c(biasb[,5], biasc[,5], biasd[,5])
+table3 <- data.frame(group, norm5)
+
+e <- ggplot(table3, aes(x = group, y = norm5)) + 
+    geom_boxplot()+ggtitle("t=1.65")+labs(x="n", y="Error")+theme(plot.title = element_text(hjust = 0.5))
+
+
+norm6 <- c(biasb[,6], biasc[,6], biasd[,6])
+table3 <- data.frame(group, norm6)
+
+f <- ggplot(table3, aes(x = group, y = norm6)) + 
+    geom_boxplot()+ggtitle("t=2.32")+labs(x="n", y="Error")+theme(plot.title = element_text(hjust = 0.5))
+
+
+norm7 <- c(biasb[,7], biasc[,7], biasd[,7])
+table3 <- data.frame(group, norm7)
+
+g <- ggplot(table3, aes(x = group, y = norm7)) + 
+    geom_boxplot()+ggtitle("t=2.58")+labs(x="n", y="Error")+theme(plot.title = element_text(hjust = 0.5))
+
+
+norm8 <- c(biasb[,8], biasc[,8], biasd[,8])
+table3 <- data.frame(group, norm8)
+
+h <- ggplot(table3, aes(x = group, y = norm8)) + 
+    geom_boxplot()+ggtitle("t=3.09")+labs(x="n", y="Error")+theme(plot.title = element_text(hjust = 0.5))
+
+
+norm9 <- c(biasb[,9], biasc[,9], biasd[,9])
+table3 <- data.frame(group, norm9)
+
+i <- ggplot(table3, aes(x = group, y = norm9)) + 
+    geom_boxplot()+ggtitle("t=3.72")+labs(x="n", y="Error")+theme(plot.title = element_text(hjust = 0.5))
+
+gridExtra::grid.arrange(a, b, c, d, e, f, g, h, i, 
+                        nrow=3, ncol=3,
+                        top="100 Approximation Errors at Each t")
+
+
 ```
 
-The box plots show that when $n$ goes larger and larger, the distribution approaches a standard normal distribution. So the mean is more and more close to $0$, and distribution is symmetric on $0$.
+The box plots show that when $n$ goes larger and larger, the error of Monte Carlo methods approaches to $0$, which means when sample size increasing, the Monte Carlo methods can more accurately simulate $N(0,1)$.
 
 Since the highly similarity of two distributions, cdf of $N(0,1)$ can be simulated by Monte Carlo method in calculation.
 
