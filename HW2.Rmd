@@ -47,8 +47,7 @@ a <- array(data=NA, dim=length(t))
 for (i in 1:length(t)){
 a[i] <- pnorm(t[i], mean=0, sd=1)
 }
-t <- c("t=", t)
-a <- c("F(x)=", a)
+a <- c("True Value", a)
 
 
 set.seed(y)
@@ -79,11 +78,8 @@ for (z in 1:9)
 }
 }
 
-table1 <- array(c(t, a), dim = c(10, 2))
-kable(table1, caption = 'The CDF of Standard Normal Distribution', booktabs=T) %>%
-  row_spec(1, bold = T, hline_after = T)
-table2 <- array(c(t, b, c, d), dim = c(10, 4))
-kable(table2, caption = 'The Summation of Monte Carlo Methods', booktabs=T) %>%
+table1 <- array(c(t, a, b, c, d), dim = c(10, 5))
+kable(table1, caption = 'The Summation of Equations', booktabs=T) %>%
   row_spec(1, bold = T, hline_after = T)
   
 ```
